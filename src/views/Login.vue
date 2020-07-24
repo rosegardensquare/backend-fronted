@@ -38,12 +38,15 @@ export default {
       // 为表单绑定验证功能
       this.$refs.loginForm.validate((valid) => {
         this.$store.commit("ADD_COUNT", this.form.name);
+        this.$router.push({ path: "/main" }); // 页面跳转
+
         if (valid) {
           console.log("name : " + this.form.name);
           //通过验证
           login(this.form).then((res) => {
             var json = res.status;
             this.$store.commit("ADD_COUNT", json);
+            this.$router.push({ path: "/main" }); // 页面跳转
           });
         } else {
           //未通过验证

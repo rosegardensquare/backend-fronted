@@ -53,7 +53,7 @@ router.beforeEach((to, from, next) => {
     if (store.state.token == "" || store.state.token == null) {
       next({
         path: "/",
-        query: { redirect: to.fullPath }, // 将跳转的路由path作为参数，登录成功后跳转到该路由
+        query: { redirect: to.fullPath }, // 将跳转的路由path作为参数，登录成功后跳转到该路由，登录之前在哪个路由，登录成功转向那个路由
       });
     } else {
       next();
