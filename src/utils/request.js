@@ -49,12 +49,9 @@ instance.interceptors.response.use((response) => {
   const { status, data } = response;
   if (Object.is(status, 200)) {
     endLoading();
-    const { status } = data;
-    if (Object.is(status, "success")) {
-      console.log("data : ", data);
-      console.log("Promise.resolve(data) : ", Promise.resolve(data));
-      return Promise.resolve(data);
-    }
+    return Promise.resolve(data);
+
+
 
     /*
       const { code, msg } = data;

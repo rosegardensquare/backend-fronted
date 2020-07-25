@@ -3,6 +3,10 @@ import Router from "vue-router";
 
 import Login from "../views/Login";
 import Main from "../views/Main";
+import Home from "../views/demo/Home";
+import List from "../views/demo/List";
+import Manage from "../views/demo/Manage";
+import Add from "../views/demo/Add";
 
 Vue.use(Router);
 
@@ -26,6 +30,37 @@ export default new Router({
       meta: {
         requireAuth: true, // 表示进入该路由是需要登录的
       },
+      redirect: "/home",
+      children: [
+        {
+          path: "/home",
+          component: Home,
+          meta: {
+            requireAuth: true,
+          }
+        },
+        {
+          path: "/add",
+          component: Add,
+          meta: {
+            requireAuth: true,
+          }
+        },
+        {
+          path: "/list",
+          component: List,
+          meta: {
+            requireAuth: true,
+          }
+        },
+        {
+          path: "/manage",
+          component: Manage,
+          meta: {
+            requireAuth: true,
+          }
+        }
+      ]
     },
   ],
 });

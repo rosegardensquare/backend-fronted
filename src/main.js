@@ -8,6 +8,7 @@ import "element-ui/lib/theme-chalk/index.css";
 
 import App from "./App";
 import Vuex from "vuex"; //引入状态管理
+import './assets/css/global.css' // 引入全局的css 
 
 Vue.prototype.$axios = axios;
 
@@ -21,6 +22,8 @@ Vue.use(Vuex);
 
 const ADD_COUNT = "ADD_COUNT"; // 用常量代替事件类型，使得代码更清晰
 const REMOVE_COUNT = "REMOVE_COUNT";
+
+
 
 //注册状态管理全局参数
 var store = new Vuex.Store({

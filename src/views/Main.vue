@@ -4,29 +4,37 @@
       <div>
         <span>后台管理系统</span>
       </div>
-      <el-button type="info" @click="logout">退出</el-button>
+      <el-button type="plain" @click="logout">退出</el-button>
     </el-header>
     <el-container>
       <el-aside width="200px">
         <!-- 侧边栏 -->
-        <el-menu background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
+        <el-menu
+          style="border-right:none"
+          background-color="#000000"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+          :unique-opened="true"
+          :router="true"
+          :default-active="$route.path"
+        >
           <!-- 一级菜单 -->
-          <el-submenu index="1">
+          <el-submenu :index="item.id" v-for="item in menuList" :key="item.id">
             <!-- 一级菜单模板 -->
             <template slot="title">
               <!-- 图标 -->
-              <i class="el-icon-location"></i>
+              <i :class="item.icon"></i>
               <!-- 文本 -->
-              <span>一级菜单</span>
+              <span>{{item.authName}}</span>
             </template>
 
             <!-- 二级菜单 -->
-            <el-menu-item index="1-4-1">
+            <el-menu-item :index="subItem.path" v-for="subItem in item.children" :key="subItem.id">
               <!-- 二级菜单模板 -->
               <template slot="title">
-                <i class="el-icon-location"></i>
+                <i :class="subItem.icon"></i>
                 <!-- 文本 -->
-                <span>二级菜单</span>
+                <span>{{subItem.authName}}</span>
               </template>
             </el-menu-item>
           </el-submenu>
@@ -35,7 +43,7 @@
       </el-aside>
       <el-main>
         <!-- 主体 -->
-
+        <router-view></router-view>
         <!-- 主体 -->
       </el-main>
     </el-container>
@@ -43,18 +51,36 @@
 </template>
 
 <script>
+import { logins } from "@/utils/api";
+
 export default {
   name: "Main",
+  data() {
+    return {
+      // 左侧菜单数据
+      menuList: []
+    };
+  },
+  created() {
+    this.getMenus();
+  },
   methods: {
     logout() {
       window.sessionStorage.clear();
       this.$router.push("/");
+    },
+
+    getMenus() {
+      logins("1").then(res => {
+        console.log("234345659999999999 ----------" + res.data);
+        this.menuList = res.data;
+      });
     }
   }
 };
 </script>
 
-<style>
+<style >
 html,
 body {
   padding: 0;
@@ -81,14 +107,10 @@ body {
 .el-aside {
   background-color: #000000;
   color: #333;
-  /* text-align: center;
-  line-height: 200px;-- */
 }
 
 .el-main {
   background-color: #e9eef3;
   color: #333;
-  text-align: center;
-  line-height: 160px;
 }
 </style>>

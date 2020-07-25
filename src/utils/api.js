@@ -18,3 +18,9 @@ export function putSomeAPI(params) {
 export function deleteListAPI(params) {
   return http.delete(`${resquest}/deleteList.json`, params);
 }
+
+export function logins(params) {
+  return http.get(`/data/home.json`, params);
+}
+
+

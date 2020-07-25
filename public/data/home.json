@@ -1,0 +1,38 @@
+{
+    "data": [
+        {
+            "id": "11111",
+            "authName": "商品管理",
+            "icon": "el-icon-s-claim",
+            "path": null,
+            "children": [
+                {
+                    "id": "44456",
+                    "authName": "商品添加",
+                    "icon": "el-icon-s-tools",
+                    "path": "/add"
+                },
+                {
+                    "id": "222334",
+                    "authName": "商品列表",
+                    "icon": "el-icon-s-order",
+                    "path": "/list"
+                }
+            ]
+        },
+        {
+            "id": "222",
+            "authName": "信息管理",
+            "icon": "el-icon-s-promotion",
+            "path": null,
+            "children": [
+                {
+                    "id": "4444",
+                    "authName": "信息列表",
+                    "icon": "el-icon-picture",
+                    "path": "/manage"
+                }
+            ]
+        }
+    ]
+}

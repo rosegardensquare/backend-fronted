@@ -13,6 +13,8 @@
   "dependencies": {
     "axios": "^0.19.2",
     "element-ui": "^2.13.2",
+    "less": "^2.7.3",
+    "less-loader": "^6.2.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
@@ -27,5 +29,13 @@
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11"
+  },
+  "rules": {
+    "generator-star-spacing": "off",
+    "no-tabs": "off",
+    "no-unused-vars": "off",
+    "no-console": "off",
+    "no-irregular-whitespace": "off",
+    "no-debugger": "off"
   }
 }
