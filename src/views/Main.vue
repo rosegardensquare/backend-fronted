@@ -66,9 +66,10 @@ body {
 }
 
 .el-header {
-  background-color: #b3c0d1;
-  color: #333;
+  background-color: #000000;
+  color: #ffffff;
   font-size: 20px;
+  font-weight: bold;
   text-align: center;
   line-height: 60px;
   display: flex; /** header 左侧和右侧结构 */
@@ -78,7 +79,7 @@ body {
 }
 
 .el-aside {
-  background-color: #d3dce6;
+  background-color: #000000;
   color: #333;
   /* text-align: center;
   line-height: 200px;-- */
