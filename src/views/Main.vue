@@ -21,9 +21,10 @@
             </template>
 
             <!-- 二级菜单 -->
-            <el-menu-item index="1-1">
+            <el-menu-item index="1-4-1">
               <!-- 二级菜单模板 -->
               <template slot="title">
+                <i class="el-icon-location"></i>
                 <!-- 文本 -->
                 <span>二级菜单</span>
               </template>
@@ -79,8 +80,8 @@ body {
 .el-aside {
   background-color: #d3dce6;
   color: #333;
-  text-align: center;
-  line-height: 200px;
+  /* text-align: center;
+  line-height: 200px;-- */
 }
 
 .el-main {
@@ -88,18 +89,5 @@ body {
   color: #333;
   text-align: center;
   line-height: 160px;
-}
-
-body > .el-container {
-  margin-bottom: 40px;
-}
-
-.el-container:nth-child(5) .el-aside,
-.el-container:nth-child(6) .el-aside {
-  line-height: 260px;
-}
-
-.el-container:nth-child(7) .el-aside {
-  line-height: 320px;
 }
 </style>>
