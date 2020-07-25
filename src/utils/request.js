@@ -11,7 +11,7 @@ function openLoading() {
     spinner: "el-icon-loading",
     background: "rgba(0, 0, 0, 0.7)",
   });
-  setTimeout(function() {
+  setTimeout(function () {
     // 设定定时器，超时2S后自动关闭遮罩层，避免请求失败时，遮罩层一直存在的问题
     loading.close(); // 关闭遮罩层
   }, 2000);
@@ -31,7 +31,7 @@ const instance = axios.create({
 // 拦截请求
 instance.interceptors.request.use(
   (config) => {
-    //  可以在此处添加 token
+    config.headers.Authorization = window.sessionStorage.getItem('token')
     // 请求头携带token
 
     // config.headers['AuthToken'] = 'your.token';
