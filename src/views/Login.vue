@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { logins } from "@/utils/api";
+import { login } from "@/utils/api";
 
 export default {
   data() {
@@ -41,7 +41,7 @@ export default {
         if (valid) {
           console.log("name : " + this.form.name);
           //通过验证
-          logins(this.form).then(res => {
+          login(this.form).then(res => {
             console.log("------" + res.data.id);
 
             var json = res.status;

@@ -23,7 +23,7 @@ function endLoading() {
 }
 
 const instance = axios.create({
-  baseURL: process.env.VUE_APP_URL, // api的base_url
+  baseURL: process.env.VUE_APP_BASE_API, //基础路径,.env.development
   timeout: 15000, // 请求超时时间, 单位是 ms，
   headers: { "content-type": "application/json;charset=UTF-8" },
 });

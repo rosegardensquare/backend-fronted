@@ -1,6 +1,7 @@
 import http from "./http";
 
-let resquest = "/testIp/request/";
+let resquest = process.env.VUE_APP_BASEURL;
+
 
 // get请求
 export function xxx(params) {
@@ -8,7 +9,7 @@ export function xxx(params) {
 }
 // post请求
 export function login(params) {
-  return http.post(`/api/v1/attendances/test`, params);
+  return http.post(`/login`, params);
 }
 // put 请求
 export function putSomeAPI(params) {
@@ -28,6 +29,10 @@ export function getUserList(params) {
 export function getUserList1(params) {
   return http.get(`/data/user1.json`, params);
 }
+
+
+
+
 
 
 
