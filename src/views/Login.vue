@@ -44,7 +44,7 @@ export default {
           console.log("输入框的 userName : " + this.form.userName);
           //通过验证
           login(this.form).then(res => {
-            console.log("------" + res.data);
+            console.log("------11" + res.data);
 
             var json = res.status;
             this.$store.commit("ADD_COUNT", json);
