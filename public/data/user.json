@@ -1,29 +1,51 @@
 {
-    "tableData": [
+    "records": [
         {
-            "date": "2016-05-01",
-            "name": "王小虎1",
-            "address": "上海市普陀区金沙江路",
-            "status": true
+            "createTime": "2020-12-09 15:13:05",
+            "del": false,
+            "id": "2",
+            "name": "李四",
+            "nickname": "2",
+            "password": "34",
+            "sex": false,
+            "updateTime": "2020-12-30 15:13:11"
         },
         {
-            "date": "2016-05-02",
-            "name": "王小虎",
-            "address": "上海市普陀区金沙江路 1518 弄",
-            "status": false
+            "birthday": "2020-12-09 00:00:00",
+            "createTime": "2020-12-10 19:26:34",
+            "del": false,
+            "id": "8ca60ca9a3914ccab3c3453fe8b03eaf",
+            "name": "998",
+            "nickname": "121e",
+            "password": "123456",
+            "sex": true,
+            "tel": "12345245677",
+            "updateTime": "2020-12-11 10:25:15"
         },
         {
-            "date": "2016-05-02",
-            "name": "王小虎",
-            "address": "上海市普陀区金沙江路 1518 弄",
-            "status": true
+            "createTime": "2020-12-10 15:13:03",
+            "del": false,
+            "id": "1",
+            "name": "张三",
+            "nickname": "1",
+            "password": "12",
+            "sex": true,
+            "updateTime": "2020-12-10 15:13:09"
         },
         {
-            "date": "2016-05-02",
-            "name": "王小虎",
-            "address": "上海市普陀区金沙江路 1518 弄",
-            "status": true
+            "createTime": "2020-12-10 19:21:00",
+            "del": false,
+            "id": "111",
+            "name": "11111",
+            "nickname": "11111"
+        },
+        {
+            "createTime": "2020-12-10 19:21:03",
+            "del": false,
+            "id": "573908b0dd9349d49a2e8afb8166f0dd",
+            "name": "张帅",
+            "nickname": "达到"
         }
     ],
-    "total": 4
+    "total": 5
 }

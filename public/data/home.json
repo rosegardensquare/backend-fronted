@@ -2,21 +2,21 @@
     "data": [
         {
             "id": "11111",
-            "authName": "商品管理",
+            "authName": "用户管理",
             "icon": "el-icon-s-claim",
             "path": null,
             "children": [
                 {
                     "id": "44456",
-                    "authName": "商品添加",
+                    "authName": "用户列表",
                     "icon": "el-icon-s-tools",
-                    "path": "/add"
+                    "path": "/list"
                 },
                 {
                     "id": "222334",
-                    "authName": "商品列表",
+                    "authName": "用户添加",
                     "icon": "el-icon-s-order",
-                    "path": "/list"
+                    "path": "/add"
                 }
             ]
         },

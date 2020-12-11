@@ -24,10 +24,10 @@ export function logins(params) {
   return http.get(`/data/home.json`, params);
 }
 export function getUserList(params) {
-  return http.get(`/data/user.json`, params);
+  return http.get(`/user/getUserPage`, params);
 }
-export function getUserList1(params) {
-  return http.get(`/data/user1.json`, params);
+export function addUser(params) {
+  return http.post(`/user/addUser`, params);
 }
 
 
