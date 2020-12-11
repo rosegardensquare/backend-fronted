@@ -50,26 +50,6 @@ instance.interceptors.response.use((response) => {
   if (Object.is(status, 200)) {
     endLoading();
     return Promise.resolve(data);
-
-
-
-    /*
-      const { code, msg } = data;
-      switch (code) {
-        case 200:
-          msg && console.log("msg --" + msg);
-          console.log("data.data : " + data.data)
-         return Promise.resolve(data.data);
-        case 304:
-          // 请求过期
-          console.log('跳转到首页');
-          break;
-        case 500:
-          return Promise.reject('失败了');
-        default:
-          return;
-      }
-    */
   } else {
     // return Promise.reject(new Error());
     return Promise.reject("失败了");

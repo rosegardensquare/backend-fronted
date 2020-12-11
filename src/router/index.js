@@ -3,10 +3,10 @@ import Router from "vue-router";
 
 import Login from "../views/Login";
 import Main from "../views/Main";
-import Home from "../views/demo/Home";
-import List from "../views/demo/List";
-import Manage from "../views/demo/Manage";
-import Add from "../views/demo/Add";
+import Home from "../views/user/Home";
+import List from "../views/user/List";
+import Manage from "../views/user/Manage";
+import Add from "../views/user/Add";
 
 Vue.use(Router);
 
@@ -15,8 +15,7 @@ export default new Router({
   routes: [
     {
       path: "/", // 登录页
-      name: "Login",
-      component: Login,
+      redirect: '/login', //重定向到/login 
     },
     {
       path: "/login",
@@ -40,15 +39,15 @@ export default new Router({
           }
         },
         {
-          path: "/add",
-          component: Add,
+          path: "/list",
+          component: List,
           meta: {
             requireAuth: true,
           }
         },
         {
-          path: "/list",
-          component: List,
+          path: "/add",
+          component: Add,
           meta: {
             requireAuth: true,
           }

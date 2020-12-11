@@ -42,8 +42,6 @@ export default {
           console.log("name : " + this.form.name);
           //通过验证
           login(this.form).then(res => {
-            console.log("------" + res.data.id);
-
             var json = res.status;
             this.$store.commit("ADD_COUNT", json);
             this.$router.push({ path: "/main" }); // 页面跳转
