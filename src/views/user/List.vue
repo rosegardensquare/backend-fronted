@@ -35,10 +35,10 @@
         <el-table-column prop="name" label="用户名" align="center" width="70"></el-table-column>
         <el-table-column prop="nickname" align="center" label="昵称"></el-table-column>
 
-        <el-table-column prop="del" label="状态" align="center" width="70">
+        <el-table-column prop="del" label="可用状态" align="center" width="100">
           <template slot-scope="scope">
             <el-switch
-              @change="changeStatus(scope.row)"
+              @change="changeStatus(scope.row.id, !scope.row.del)"
               v-model="scope.row.del==0"
               active-color="#13ce66"
               inactive-color="#ff4949"
@@ -61,7 +61,7 @@
             <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 
             <el-tooltip effect="dark" content="删除" placement="top">
-              <el-button size="mini" type="danger" @click="deleteDialog = true">删除</el-button>
+              <el-button size="mini" type="danger" @click="remove(scope.row.id)">删除</el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -77,15 +77,6 @@
         :total="total"
       ></el-pagination>
     </el-card>
-
-    <!-- 删除 - 对话框 -->
-    <el-dialog title="提示" :visible.sync="deleteDialog" width="30%">
-      <span>这是一段信息</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="deleteDialog = false">取 消</el-button>
-        <el-button type="primary" @click="deleteDialog = false">确 定</el-button>
-      </span>
-    </el-dialog>
 
     <!-- 添加 - 对话框 -->
 
@@ -161,21 +152,8 @@
           <el-row>
             <el-col :span="10">
               <div class="grid-content bg-purple">
-                <el-form-item label="用户名" prop="username" required>
+                <el-form-item label="用户名" prop="name" required>
                   <el-input v-model="editForm.name" :disabled="false"></el-input>
-                  <el-input
-                    type="hidden"
-                    v-model="editForm.name"
-                    :disabled="true"
-                    style="display:none;"
-                  ></el-input>
-                </el-form-item>
-              </div>
-            </el-col>
-            <el-col :span="12">
-              <div class="grid-content bg-purple-light">
-                <el-form-item label="密码" prop="username">
-                  <el-input v-model="editForm.password" :disabled="true"></el-input>
                   <el-input
                     type="hidden"
                     v-model="editForm.id"
@@ -185,12 +163,19 @@
                 </el-form-item>
               </div>
             </el-col>
+            <el-col :span="12">
+              <div class="grid-content bg-purple-light">
+                <el-form-item label="密码" prop="password">
+                  <el-input v-model="editForm.password" :disabled="true"></el-input>
+                </el-form-item>
+              </div>
+            </el-col>
           </el-row>
 
           <el-row>
             <el-col :span="10">
               <div class="grid-content bg-purple">
-                <el-form-item label="昵称" prop="nickname" required>
+                <el-form-item label="昵称" prop="nickname">
                   <el-input v-model="editForm.nickname"></el-input>
                 </el-form-item>
               </div>
@@ -211,7 +196,7 @@
             <el-input v-model="editForm.tel"></el-input>
           </el-form-item>
 
-          <el-form-item prop="birthday" label="生日">
+          <el-form-item prop="birthday" label="生日" required>
             <el-col :span="11">
               <el-date-picker
                 type="date"
@@ -227,12 +212,7 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button
-          type="primary"
-          @click="updateUser"
-          :loading="btnLoading"
-          :disabled="btnDisabled"
-        >确 定</el-button>
+        <el-button type="primary" @click="updateUser" :loading="btnLoading">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -251,6 +231,8 @@
 <script>
 import { getUserList } from "@/utils/api";
 import { addUser } from "@/utils/api";
+import { deleteUser } from "@/utils/api";
+import { updateUserStatus } from "@/utils/api";
 
 export default {
   data() {
@@ -263,7 +245,6 @@ export default {
       current: 1,
       userList: [],
       total: 0,
-      deleteDialog: false,
       editDialogVisible: false,
       addDialog: false,
       user: {
@@ -332,8 +313,21 @@ export default {
       this.$refs["ruleForm"].resetFields();
       this.addDialog = false;
     },
-    changeStatus(userInfo) {
-      this.$message.success("这是一条消息提示");
+    changeStatus(id, del) {
+      updateUserStatus({
+        id: id,
+        del: del
+      }).then(res => {
+        if (res.success) {
+          this.$message({
+            type: "success",
+            message: "修改成功!"
+          });
+          this.getUserListData();
+        } else {
+          this.$message.error("修改失败");
+        }
+      });
     },
     addDialogClose() {
       this.$refs["ruleForm"].resetFields();
@@ -341,18 +335,66 @@ export default {
     },
     addUser() {
       this.$refs.ruleForm.validate(valid => {
-        console.log("ruleForm: " + this.$refs.ruleForm);
         if (valid) {
           addUser(this.user).then(res => {
-            this.$message.success("添加成功");
-            this.addDialog = false;
-            this.getUserListData();
+            if (res.success) {
+              this.$message.success("编辑成功");
+              this.addDialog = false;
+              this.getUserListData();
+            } else {
+              this.$message.error("编辑失败");
+            }
           });
         } else {
           //未通过验证
-          this.$message.error("添加失败");
+          this.$message.error("验证失败");
         }
       });
+    },
+    updateUser() {
+      this.$refs.editFormRef.validate(valid => {
+        if (valid) {
+          addUser(this.editForm).then(res => {
+            if (res.success) {
+              this.$message.success("编辑成功");
+              this.editDialogVisible = false;
+              this.getUserListData();
+            } else {
+              this.$message.error("编辑失败");
+            }
+          });
+        } else {
+          //未通过验证
+          this.$message.error("验证失败");
+        }
+      });
+    },
+
+    remove(id) {
+      this.$confirm("确定要删除吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          deleteUser({ id: id }).then(res => {
+            if (res.success) {
+              this.$message({
+                type: "success",
+                message: "删除成功!"
+              });
+              this.getUserListData();
+            } else {
+              this.$message.error("删除失败");
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     }
   }
 };

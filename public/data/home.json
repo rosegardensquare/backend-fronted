@@ -14,7 +14,7 @@
                 },
                 {
                     "id": "222334",
-                    "authName": "用户添加",
+                    "authName": "权限列表",
                     "icon": "el-icon-s-order",
                     "path": "/add"
                 }

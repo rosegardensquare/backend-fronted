@@ -29,7 +29,13 @@ export function getUserList(params) {
 export function addUser(params) {
   return http.post(`/user/addUser`, params);
 }
+export function deleteUser(params) {
+  return http.get(`/user/deleteUser`, params);
+}
 
+export function updateUserStatus(params) {
+  return http.get(`/user/updateUserStatus`, params);
+}
 
 
 
