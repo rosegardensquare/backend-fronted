@@ -140,7 +140,12 @@
     </el-dialog>
 
     <!-- 修改对话框 -->
-    <el-dialog title="修改用户" :visible.sync="editDialogVisible" width="50%" @close="editClose">
+    <el-dialog
+      title="修改用户"
+      :visible.sync="editDialogVisible"
+      width="50%"
+      @close="updateDialogClose"
+    >
       <span>
         <el-form
           :model="editForm"
@@ -237,6 +242,7 @@ import { updateUserStatus } from "@/utils/api";
 export default {
   data() {
     return {
+      btnLoading: false,
       queryInfo: {
         queryName: "",
         pageSize: 5,
@@ -333,6 +339,10 @@ export default {
       this.$refs["ruleForm"].resetFields();
       this.addDialog = false;
     },
+    updateDialogClose() {
+      this.$refs["editFormRef"].resetFields();
+      this.editDialogVisible = false;
+    },
     addUser() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
@@ -352,9 +362,11 @@ export default {
       });
     },
     updateUser() {
+      this.loading = true;
       this.$refs.editFormRef.validate(valid => {
         if (valid) {
           addUser(this.editForm).then(res => {
+            this.loading = false;
             if (res.success) {
               this.$message.success("编辑成功");
               this.editDialogVisible = false;
