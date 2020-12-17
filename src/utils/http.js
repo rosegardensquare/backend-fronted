@@ -24,6 +24,19 @@ const http = {
     if (params) config.data = params;
     return instance(config);
   },
+  postkv(url, params) {
+    const config = {
+      method: "post",
+      url: url,
+    };
+    let ret = '';
+    for (let i in params) {
+      ret += encodeURIComponent(i) + '=' + encodeURIComponent(params[i]) + '&'
+    }
+    console.log("---------ret--------", ret);
+    if (ret) config.data = ret;
+    return instance(config);
+  },
   put(url, params) {
     const config = {
       method: "put",

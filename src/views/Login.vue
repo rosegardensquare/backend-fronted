@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { login } from "@/utils/api";
+import { loginkv } from "@/utils/api";
 
 export default {
   data() {
@@ -46,7 +46,7 @@ export default {
 
         if (valid) {
           //通过验证
-          login(this.form).then(res => {
+          loginkv(this.form).then(res => {
             var json = res.status;
             this.$store.commit("ADD_COUNT", json);
             this.$router.push({ path: "/main" }); // 页面跳转
