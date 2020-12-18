@@ -2,13 +2,13 @@
     "data": [
         {
             "id": "11111",
-            "authName": "用户管理",
+            "menuName": "用户管理",
             "icon": "el-icon-s-claim",
             "path": null,
             "children": [
                 {
                     "id": "44456",
-                    "authName": "用户列表",
+                    "menuName": "用户列表",
                     "icon": "el-icon-s-tools",
                     "path": "/list"
                 }
@@ -16,13 +16,13 @@
         },
         {
             "id": "222",
-            "authName": "权限管理",
+            "menuName": "权限管理",
             "icon": "el-icon-s-promotion",
             "path": null,
             "children": [
                 {
                     "id": "4444",
-                    "authName": "权限列表",
+                    "menuName": "权限列表",
                     "icon": "el-icon-picture",
                     "path": "/manage"
                 }

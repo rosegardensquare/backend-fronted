@@ -25,7 +25,7 @@
               <!-- 图标 -->
               <i :class="item.icon"></i>
               <!-- 文本 -->
-              <span>{{item.authName}}</span>
+              <span>{{item.menuName}}</span>
             </template>
 
             <!-- 二级菜单 -->
@@ -34,7 +34,7 @@
               <template slot="title">
                 <i :class="subItem.icon"></i>
                 <!-- 文本 -->
-                <span>{{subItem.authName}}</span>
+                <span>{{subItem.menuName}}</span>
               </template>
             </el-menu-item>
           </el-submenu>

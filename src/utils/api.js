@@ -38,7 +38,7 @@ export function updateUserStatus(params) {
 }
 
 export function getMenuList(params) {
-  return http.get(`data/menus.json`, params);
+  return http.get(`/menu/getMenus`, params);
 }
 
 
