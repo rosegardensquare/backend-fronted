@@ -25,13 +25,18 @@ function endLoading() {
 const instance = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, //基础路径,.env.development
   timeout: 15000, // 请求超时时间, 单位是 ms，
-  headers: { "content-type": "application/x-www-form-urlencoded" },
+  // headers: { "content-type": "application/json;charset=UTF-8" },
 });
 
 // 拦截请求
 instance.interceptors.request.use(
   (config) => {
     config.headers.Authorization = window.sessionStorage.getItem('token')
+    if (config.isFormData) {
+      config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    } else {
+      config.headers['Content-Type'] = 'application/json;charset=UTF-8';
+    }
     // 请求头携带token
 
     // config.headers['AuthToken'] = 'your.token';

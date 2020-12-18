@@ -7,6 +7,9 @@ import Home from "../views/user/Home";
 import List from "../views/user/List";
 import Manage from "../views/user/Manage";
 import Add from "../views/user/Add";
+import UserList from "../views/sys/UserList";
+
+
 
 Vue.use(Router);
 
@@ -55,6 +58,13 @@ export default new Router({
         {
           path: "/manage",
           component: Manage,
+          meta: {
+            requireAuth: true,
+          }
+        },
+        {
+          path: "/userList",
+          component: UserList,
           meta: {
             requireAuth: true,
           }

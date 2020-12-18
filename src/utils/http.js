@@ -28,12 +28,14 @@ const http = {
     const config = {
       method: "post",
       url: url,
+      isFormData: true,
     };
     let ret = '';
     for (let i in params) {
       ret += encodeURIComponent(i) + '=' + encodeURIComponent(params[i]) + '&'
     }
-    console.log("---------ret--------", ret);
+
+    console.log("---------config.isFormData--------", config.isFormData);
     if (ret) config.data = ret;
     return instance(config);
   },
