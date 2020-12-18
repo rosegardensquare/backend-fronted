@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { logins } from "@/utils/api";
+import { getMenuList } from "@/utils/api";
 
 export default {
   name: "Main",
@@ -71,7 +71,7 @@ export default {
     },
 
     getMenus() {
-      logins("1").then(res => {
+      getMenuList("1").then(res => {
         console.log("234345659999999999 ----------" + res.data);
         this.menuList = res.data;
       });
