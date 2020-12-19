@@ -50,7 +50,6 @@ instance.interceptors.request.use(
 );
 // 拦截响应
 instance.interceptors.response.use((response) => {
-  console.log("response : ", response);
   const { status, data } = response;
   if (Object.is(status, 200)) {
     endLoading();

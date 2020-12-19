@@ -11,7 +11,7 @@
       <el-form-item>
         <div style="float:right;">
           <el-button type="primary" v-on:click="onSubmit()">登录</el-button>
-          <el-button @click="resetForm">重置</el-button>
+          <el-button type="info" @click="resetForm">重置</el-button>
         </div>
       </el-form-item>
     </el-form>
@@ -47,6 +47,11 @@ export default {
         if (valid) {
           //通过验证
           loginkv(this.form).then(res => {
+            if (res.code !== "200") {
+              // 提示
+              this.$message.error(res.message);
+              return;
+            }
             var json = res.status;
             this.$store.commit("ADD_COUNT", json);
             this.$router.push({ path: "/main" }); // 页面跳转

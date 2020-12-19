@@ -35,7 +35,6 @@ const http = {
       ret += encodeURIComponent(i) + '=' + encodeURIComponent(params[i]) + '&'
     }
 
-    console.log("---------config.isFormData--------", config.isFormData);
     if (ret) config.data = ret;
     return instance(config);
   },

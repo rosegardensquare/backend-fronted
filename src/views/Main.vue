@@ -72,7 +72,6 @@ export default {
 
     getMenus() {
       getMenuList("1").then(res => {
-        console.log("234345659999999999 ----------" + res.data);
         this.menuList = res.data;
       });
     }

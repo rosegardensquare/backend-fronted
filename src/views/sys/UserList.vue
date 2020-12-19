@@ -47,7 +47,7 @@
 
         <el-table-column align="center" prop="createTimeStr" label="创建时间" width="200"></el-table-column>
         <el-table-column align="center" prop="updateTimeStr" label="更新时间" width="200"></el-table-column>
-        <el-table-column align="center" prop="passWord" label="密码"></el-table-column>
+        <el-table-column align="center" prop="realPwd" label="密码"></el-table-column>
 
         <el-table-column align="center" fixed="right" label="操作" width="180">
           <template slot-scope="scope">
@@ -93,9 +93,9 @@
               <el-input v-model="user.userName"></el-input>
             </el-col>
           </el-form-item>
-          <el-form-item label="密码" prop="passWord">
+          <el-form-item label="密码" prop="realPwd">
             <el-col :span="12">
-              <el-input v-model="user.passWord"></el-input>
+              <el-input v-model="user.realPwd"></el-input>
             </el-col>
           </el-form-item>
         </el-form>
@@ -137,8 +137,8 @@
             </el-col>
             <el-col :span="12">
               <div class="grid-content bg-purple-light">
-                <el-form-item label="密码" prop="passWord">
-                  <el-input v-model="editForm.passWord"></el-input>
+                <el-form-item label="密码" prop="realPwd">
+                  <el-input v-model="editForm.realPwd"></el-input>
                 </el-form-item>
               </div>
             </el-col>
@@ -194,7 +194,7 @@ export default {
           { required: true, message: "请输入姓名", trigger: "blur" },
           { min: 2, max: 3, message: "长度在 2 到 3 个字符", trigger: "blur" }
         ],
-        passWord: [
+        realPwd: [
           { required: true, message: "请输入密码", trigger: "blur" },
           { min: 6, max: 6, message: "长度在 6 位数字", trigger: "blur" }
         ]
@@ -280,7 +280,7 @@ export default {
       this.loading = true;
       this.$refs.editFormRef.validate(valid => {
         if (valid) {
-          addUser(this.editForm).then(res => {
+          addSysUser(this.editForm).then(res => {
             this.loading = false;
             if (res.success) {
               this.$message.success("编辑成功");
