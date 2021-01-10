@@ -167,8 +167,8 @@
 <script>
 import { getSysUserList } from "@/utils/api";
 import { addSysUser } from "@/utils/api";
-import { deleteUser } from "@/utils/api";
-import { updateUserStatus } from "@/utils/api";
+import { deleteSysUser } from "@/utils/api";
+import { updateSysUserStatus } from "@/utils/api";
 
 export default {
   data() {
@@ -235,7 +235,7 @@ export default {
       this.addDialog = false;
     },
     changeStatus(id, del) {
-      updateUserStatus({
+      updateSysUserStatus({
         id: id,
         del: del
       }).then(res => {
@@ -304,7 +304,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          deleteUser({ id: id }).then(res => {
+          deleteSysUser({ id: id }).then(res => {
             if (res.success) {
               this.$message({
                 type: "success",

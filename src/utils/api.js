@@ -49,6 +49,13 @@ export function addSysUser(params) {
   return http.post(`/sys/user/addUser`, params);
 }
 
+export function deleteSysUser(params) {
+  return http.get(`/sys/user/deleteUser`, params);
+}
+
+export function updateSysUserStatus(params) {
+  return http.get(`/sys/user/updateUserStatus`, params);
+}
 
 
 
