@@ -8,6 +8,7 @@ import List from "../views/user/List";
 import Manage from "../views/user/Manage";
 import Add from "../views/user/Add";
 import UserList from "../views/sys/UserList";
+import RoleList from "../views/sys/RoleList";
 
 
 
@@ -65,6 +66,13 @@ export default new Router({
         {
           path: "/userList",
           component: UserList,
+          meta: {
+            requireAuth: true,
+          }
+        },
+        {
+          path: "/roleList",
+          component: RoleList,
           meta: {
             requireAuth: true,
           }

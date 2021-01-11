@@ -58,5 +58,21 @@ export function updateSysUserStatus(params) {
 }
 
 
+// Role 
+export function getSysRoleList(params) {
+  return http.get(`/sys/role/getRolePage`, params);
+}
+export function addSysRole(params) {
+  return http.post(`/sys/role/addRole`, params);
+}
+
+export function deleteSysRole(params) {
+  return http.get(`/sys/role/deleteRole`, params);
+}
+
+export function updateSysRoleStatus(params) {
+  return http.get(`/sys/role/updateRoleStatus`, params);
+}
+
 
 
