@@ -49,13 +49,20 @@
         <el-table-column align="center" prop="updateTimeStr" label="更新时间" width="200"></el-table-column>
         <el-table-column align="center" prop="realPwd" label="密码"></el-table-column>
 
-        <el-table-column align="center" fixed="right" label="操作" width="180">
+        <el-table-column align="center" fixed="right" label="操作" width="400">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 
             <el-tooltip effect="dark" content="删除" placement="top">
               <el-button size="mini" type="danger" @click="remove(scope.row.id)">删除</el-button>
             </el-tooltip>
+
+            <el-button
+              size="mini"
+              type="warning"
+              icon="el-icon-setting"
+              @click="showSetRightDialog(scope.row.id)"
+            >分配角色</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -114,13 +121,7 @@
       @close="updateDialogClose"
     >
       <span>
-        <el-form
-          :model="editForm"
-          :label-position="labelPosition"
-          :rules="rules"
-          ref="editFormRef"
-          label-width="80px"
-        >
+        <el-form :model="editForm" :rules="rules" ref="editFormRef" label-width="80px">
           <el-row>
             <el-col :span="10">
               <div class="grid-content bg-purple">

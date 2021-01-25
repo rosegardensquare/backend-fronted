@@ -38,7 +38,7 @@ export function updateUserStatus(params) {
 }
 
 export function getMenuList(params) {
-  return http.get(`/menu/getMenus`, params);
+  return http.get(`/sys/permission/getMenus`, params);
 }
 
 // sys
@@ -75,4 +75,12 @@ export function updateSysRoleStatus(params) {
 }
 
 
+// Permis
+export function getSysPermiList(params) {
+  return http.get(`/sys/permission/getPermiPage`, params);
+}
+
+export function getMenusByParentId(params) {
+  return http.get(`/sys/permission/getMenusByParentId`, params);
+}
 

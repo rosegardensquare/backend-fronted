@@ -9,7 +9,7 @@ import Manage from "../views/user/Manage";
 import Add from "../views/user/Add";
 import UserList from "../views/sys/UserList";
 import RoleList from "../views/sys/RoleList";
-
+import PermiList from '@/views/sys/PermiList'
 
 
 Vue.use(Router);
@@ -73,6 +73,13 @@ export default new Router({
         {
           path: "/roleList",
           component: RoleList,
+          meta: {
+            requireAuth: true,
+          }
+        },
+        {
+          path: "/permiList",
+          component: PermiList,
           meta: {
             requireAuth: true,
           }

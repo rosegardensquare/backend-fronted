@@ -147,13 +147,7 @@
       @close="updateDialogClose"
     >
       <span>
-        <el-form
-          :model="editForm"
-          :label-position="labelPosition"
-          :rules="rules"
-          ref="editFormRef"
-          label-width="80px"
-        >
+        <el-form :model="editForm" :rules="rules" ref="editFormRef" label-width="80px">
           <el-row>
             <el-col :span="10">
               <div class="grid-content bg-purple">

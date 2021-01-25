@@ -1,12 +1,12 @@
 <template>
   <el-container class="home-container">
     <el-header>
-      <div>
+      <div style="padding-left:15px;">
         <span>后台管理系统</span>
       </div>
       <el-button type="plain" @click="logout">退出</el-button>
     </el-header>
-    <el-container>
+    <el-container style="padding-top:1px">
       <el-aside width="200px">
         <!-- 侧边栏 -->
         <el-menu
@@ -25,7 +25,7 @@
               <!-- 图标 -->
               <i :class="item.icon"></i>
               <!-- 文本 -->
-              <span>{{item.menuName}}</span>
+              <span>{{item.permissionName}}</span>
             </template>
 
             <!-- 二级菜单 -->
@@ -34,7 +34,7 @@
               <template slot="title">
                 <i :class="subItem.icon"></i>
                 <!-- 文本 -->
-                <span>{{subItem.menuName}}</span>
+                <span>{{subItem.permissionName}}</span>
               </template>
             </el-menu-item>
           </el-submenu>

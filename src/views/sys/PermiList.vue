@@ -3,20 +3,20 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>系统管理</el-breadcrumb-item>
-      <el-breadcrumb-item>角色列表</el-breadcrumb-item>
+      <el-breadcrumb-item>权限列表</el-breadcrumb-item>
     </el-breadcrumb>
 
     <el-card class="box-card">
       <el-row :gutter="20">
         <el-col :span="6">
           <el-input
-            placeholder="请输入角色名"
+            placeholder="请输入权限名"
             clearable
             v-model="queryInfo.queryName"
             class="input-with-select"
             clear="getUserList"
           >
-            <el-button slot="append" icon="el-icon-search" @click="getRoleListData"></el-button>
+            <el-button slot="append" icon="el-icon-search" @click="getPermiListData"></el-button>
           </el-input>
         </el-col>
 
@@ -25,8 +25,14 @@
         </el-col>
       </el-row>
 
-      <el-table :data="roleList" stripe border style="width: 100%">
-        <el-table-column prop="roleName" label="角色名" align="center"></el-table-column>
+      <el-table
+        :data="permiList"
+        stripe
+        border
+        style="width: 100%"
+        :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+      >
+        <el-table-column prop="permissionName" label="权限名" align="center"></el-table-column>
 
         <el-table-column align="center" fixed="right" label="操作" width="180">
           <template slot-scope="scope">
@@ -57,7 +63,7 @@
       v-on="$listeners"
       :visible.sync="addDialog"
       @close="addDialogClose"
-      title="添加角色"
+      title="添加权限名"
     >
       <el-row :gutter="15">
         <el-form
@@ -67,7 +73,7 @@
           label-width="100px"
           class="demo-ruleForm"
         >
-          <el-form-item label="角色名" prop="roleName">
+          <el-form-item label="权限名" prop="roleName">
             <el-col :span="12">
               <el-input v-model="role.roleName"></el-input>
             </el-col>
@@ -82,7 +88,7 @@
 
     <!-- 修改对话框 -->
     <el-dialog
-      title="修改角色权限"
+      title="修改权限"
       :visible.sync="editDialogVisible"
       width="50%"
       @close="updateDialogClose"
@@ -92,7 +98,7 @@
           <el-row>
             <el-col :span="10">
               <div class="grid-content bg-purple">
-                <el-form-item label="角色名" prop="roleName" required>
+                <el-form-item label="权限名" prop="roleName" required>
                   <el-input v-model="editForm.roleName" :disabled="false"></el-input>
                   <el-input
                     type="hidden"
@@ -100,25 +106,6 @@
                     :disabled="true"
                     style="display:none;"
                   ></el-input>
-                </el-form-item>
-
-                <el-form-item label="权限">
-                  <el-tree
-                    ref="tree"
-                    :props="defaultProps"
-                    :data="data"
-                    :load="loadNode"
-                    node-key="id"
-                    :default-expanded-keys="['2', '1']"
-                    lazy
-                    show-checkbox
-                    :expand-on-click-node="false"
-                    @check-change="handleCheckChange"
-                  >
-                    <span class="custom-tree-node" slot-scope="{ node, data }">
-                      <span>{{ node.label }}</span>
-                    </span>
-                  </el-tree>
                 </el-form-item>
               </div>
             </el-col>
@@ -145,22 +132,16 @@
 </style>
 
 <script>
-import { getSysRoleList } from "@/utils/api";
+import { getSysPermiList } from "@/utils/api";
 import { addSysRole } from "@/utils/api";
 import { deleteSysRole } from "@/utils/api";
 import { updateSysRoleStatus } from "@/utils/api";
-import { getMenusByParentId } from "@/utils/api";
-import { getMenuList } from "@/utils/api";
 
 export default {
+  name: "Permi",
+
   data() {
     return {
-      data: [],
-      defaultCheckedKeys: [],
-      defaultProps: {
-        label: "permissionName",
-        id: "id"
-      },
       btnLoading: false,
       queryInfo: {
         queryName: "",
@@ -168,7 +149,7 @@ export default {
         pageNum: 1
       },
       current: 1,
-      roleList: [],
+      permiList: [],
       total: 0,
       editDialogVisible: false,
       addDialog: false,
@@ -177,91 +158,18 @@ export default {
       },
       editForm: {}, // 更新表单
       rules: {
-        roleName: [{ required: true, message: "请输入角色名", trigger: "blur" }]
+        roleName: [{ required: true, message: "请输入权限名", trigger: "blur" }]
       }
     };
   },
   created() {
-    this.getRoleListData();
-    this.getlist();
+    this.getPermiListData();
   },
   methods: {
-    handleCheckChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate);
-    },
-    getlist() {
-      getMenuList("1")
-        .then(res => {
-          this.data = this.arraytotree(res.data);
-          // todo 默认选中
-          this.$refs.tree.setCheckedKeys(["4"]);
-        })
-        .catch(res => {});
-    },
-    handleNodeClick(data) {
-      console.log(data);
-    },
-
-    //数组转化为树
-    arraytotree(arr) {
-      var top = [],
-        sub = [],
-        tempObj = {};
-
-      arr.forEach(function(item) {
-        if (item.parentId === null) {
-          // 顶级分类
-          top.push(item);
-        } else {
-          sub.push(item); // 其他分类
-        }
-        item.children = []; // 默然添加children属性
-        tempObj[item.id] = item; // 用当前分类的id做key，存储在tempObj中
-      });
-
-      sub.forEach(function(item) {
-        // 取父级
-        var parent = tempObj[item.parentId] || { children: [] };
-        // 把当前分类加入到父级的children中
-        parent.children.push(item);
-      });
-
-      return top;
-    },
-
-    loadNode(node, resolve) {
-      console.log(node);
-      if (node.level === 0) {
-        return resolve([]);
-      }
-      // 判断是否含有下级
-      var data = [];
-      getMenusByParentId({ parentId: node.data.id })
-        .then(res => {
-          if (res.data.length > 0) {
-            setTimeout(() => {
-              for (var i = 0; i < res.data.length; i++) {
-                var newObject = {};
-                newObject.permissionName = res.data[i].permissionName;
-                newObject.id = res.data[i].id;
-                data.push(newObject);
-              }
-              resolve(data);
-            }, 500);
-          } else {
-            data = [];
-            resolve(data);
-          }
-        })
-        .catch(res => {
-          resolve([]);
-        });
-    },
-
-    getRoleListData() {
-      getSysRoleList(this.queryInfo).then(res => {
+    getPermiListData() {
+      getSysPermiList(this.queryInfo).then(res => {
         if (res.success) {
-          this.roleList = res.data.records;
+          this.permiList = res.data.records;
           this.total = res.data.total;
           this.pageSize = 1;
         }
@@ -271,18 +179,16 @@ export default {
     handleEdit(index, row) {
       this.editDialogVisible = true;
       this.editForm = Object.assign({}, row);
-      // 加载权限树
-      this.getlist();
     },
 
     handleSizeChange(val) {
       this.queryInfo.pageSize = val;
       this.queryInfo.pageNum = 1;
-      this.getRoleListData();
+      this.getPermiListData();
     },
     handleCurrentChange(val) {
       this.queryInfo.pageNum = val;
-      this.getRoleListData();
+      this.getPermiListData();
     },
 
     close() {
@@ -299,7 +205,7 @@ export default {
             type: "success",
             message: "修改成功!"
           });
-          this.getRoleListData();
+          this.getPermiListData();
         } else {
           this.$message.error("修改失败");
         }
@@ -320,7 +226,7 @@ export default {
             if (res.success) {
               this.$message.success("编辑成功");
               this.addDialog = false;
-              this.getRoleListData();
+              this.getPermiListData();
             } else {
               this.$message.error("编辑失败");
             }
@@ -340,7 +246,7 @@ export default {
             if (res.success) {
               this.$message.success("编辑成功");
               this.editDialogVisible = false;
-              this.getRoleListData();
+              this.getPermiListData();
             } else {
               this.$message.error("编辑失败");
             }
@@ -365,7 +271,7 @@ export default {
                 type: "success",
                 message: "删除成功!"
               });
-              this.getRoleListData();
+              this.getPermiListData();
             } else {
               this.$message.error("删除失败");
             }
