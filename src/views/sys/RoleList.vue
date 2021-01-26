@@ -58,6 +58,7 @@
       :visible.sync="addDialog"
       @close="addDialogClose"
       title="添加角色"
+      custom-class="role-mask"
     >
       <el-row :gutter="15">
         <el-form
@@ -75,7 +76,7 @@
         </el-form>
       </el-row>
       <div slot="footer">
-        <el-button @click="close">取消</el-button>
+        <el-button type="danger" @click="close">取消</el-button>
         <el-button type="primary" @click="addRole">确定</el-button>
       </div>
     </el-dialog>
@@ -109,14 +110,17 @@
                     :data="data"
                     :load="loadNode"
                     node-key="id"
-                    :default-expanded-keys="['2', '1']"
                     lazy
                     show-checkbox
-                    :expand-on-click-node="false"
+                    :default-expanded-keys="defaultCheckedKeys"
+                    default-expand-all
                     @check-change="handleCheckChange"
                   >
                     <span class="custom-tree-node" slot-scope="{ node, data }">
-                      <span>{{ node.label }}</span>
+                      <span>
+                        <i :class="data.icon"></i>
+                        {{ node.label }}
+                      </span>
                     </span>
                   </el-tree>
                 </el-form-item>
@@ -127,20 +131,24 @@
       </span>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="danger" @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="updateRole" :loading="btnLoading">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
-<style>
+<style >
 .el-table .warning-row {
   background: oldlace;
 }
 
 .el-table .success-row {
   background: #f0f9eb;
+}
+/* 顶部下划线 */
+.role-mask .el-dialog__header {
+  border-bottom: 1px solid #ccc;
 }
 </style>
 
@@ -156,7 +164,9 @@ export default {
   data() {
     return {
       data: [],
+      permisIdTemps: [],
       defaultCheckedKeys: [],
+      defaultShowNodes: [], // 这里存放要默认展开的节点 id
       defaultProps: {
         label: "permissionName",
         id: "id"
@@ -183,24 +193,37 @@ export default {
   },
   created() {
     this.getRoleListData();
-    this.getlist();
   },
   methods: {
     handleCheckChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate);
+      // this.editForm.permisIds();
+      this.permisIdTemps.push(data.id);
+      if (this.editForm.permisIds == null) {
+        this.editForm.permisIds = [];
+      }
+      if (checked) {
+        this.editForm.permisIds.push(data.id);
+      } else {
+        this.editForm.permisIds.splice(
+          this.editForm.permisIds.indexOf(data.id.toString()),
+          1
+        );
+      }
+      console.log("Change,data", this.permisIdTemps);
     },
-    getlist() {
+    getlist(permisIds) {
       getMenuList("1")
         .then(res => {
           this.data = this.arraytotree(res.data);
-          // todo 默认选中
-          this.$refs.tree.setCheckedKeys(["4"]);
+          this.data = res.data;
+          //默认选中
+          this.$refs.tree.setCheckedKeys(permisIds);
+          // 默认展开
+          this.defaultCheckedKeys = permisIds;
         })
         .catch(res => {});
     },
-    handleNodeClick(data) {
-      console.log(data);
-    },
+    handleNodeClick(data) {},
 
     //数组转化为树
     arraytotree(arr) {
@@ -230,7 +253,6 @@ export default {
     },
 
     loadNode(node, resolve) {
-      console.log(node);
       if (node.level === 0) {
         return resolve([]);
       }
@@ -244,6 +266,7 @@ export default {
                 var newObject = {};
                 newObject.permissionName = res.data[i].permissionName;
                 newObject.id = res.data[i].id;
+                newObject.icon = res.data[i].icon;
                 data.push(newObject);
               }
               resolve(data);
@@ -272,7 +295,7 @@ export default {
       this.editDialogVisible = true;
       this.editForm = Object.assign({}, row);
       // 加载权限树
-      this.getlist();
+      this.getlist(this.editForm.permisIds);
     },
 
     handleSizeChange(val) {
