@@ -16,3 +16,7 @@
   .el-pagination{
     margin-top: 15px;
   }
+  /* 顶部下划线 */
+.role-mask .el-dialog__header {
+  border-bottom: 1px solid #ccc;
+}

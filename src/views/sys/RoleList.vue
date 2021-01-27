@@ -146,10 +146,6 @@
 .el-table .success-row {
   background: #f0f9eb;
 }
-/* 顶部下划线 */
-.role-mask .el-dialog__header {
-  border-bottom: 1px solid #ccc;
-}
 </style>
 
 <script>

@@ -21,19 +21,15 @@
         </el-col>
 
         <el-col :span="6">
-          <el-button @click="addDialog = true" type="primary">添加</el-button>
+          <el-button @click="roleHandler()" type="primary">添加</el-button>
         </el-col>
       </el-row>
 
-      <el-table
-        :data="userList"
-        stripe
-        border
-        style="width: 100%"
-        :header-cell-style="{background:'#eef1f6',color:'#606266'}"
-      >
+      <el-table :data="userList" stripe border style="width: 100%">
         <el-table-column prop="userName" label="用户名" align="center" width="70"></el-table-column>
-
+        <el-table-column align="center" prop="realPwd" label="密码"></el-table-column>
+        <el-table-column align="center" prop="createTimeStr" label="创建时间" width="200"></el-table-column>
+        <el-table-column align="center" prop="updateTimeStr" label="更新时间" width="200"></el-table-column>
         <el-table-column prop="del" label="可用状态" align="center" width="100">
           <template slot-scope="scope">
             <el-switch
@@ -44,11 +40,6 @@
             ></el-switch>
           </template>
         </el-table-column>
-
-        <el-table-column align="center" prop="createTimeStr" label="创建时间" width="200"></el-table-column>
-        <el-table-column align="center" prop="updateTimeStr" label="更新时间" width="200"></el-table-column>
-        <el-table-column align="center" prop="realPwd" label="密码"></el-table-column>
-
         <el-table-column align="center" fixed="right" label="操作" width="400">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -56,13 +47,6 @@
             <el-tooltip effect="dark" content="删除" placement="top">
               <el-button size="mini" type="danger" @click="remove(scope.row.id)">删除</el-button>
             </el-tooltip>
-
-            <el-button
-              size="mini"
-              type="warning"
-              icon="el-icon-setting"
-              @click="showSetRightDialog(scope.row.id)"
-            >分配角色</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -83,9 +67,10 @@
     <el-dialog
       v-bind="$attrs"
       v-on="$listeners"
-      :visible.sync="addDialog"
-      @close="addDialogClose"
+      :visible.sync="addUserDialog"
+      @close="addUserDialogClose"
       title="添加用户"
+      custom-class="role-mask"
     >
       <el-row :gutter="15">
         <el-form
@@ -105,6 +90,19 @@
               <el-input v-model="user.realPwd"></el-input>
             </el-col>
           </el-form-item>
+
+          <el-form-item label="角色" prop="roleId">
+            <el-col :span="12">
+              <el-select v-model="user.roleId" placeholder="请选择">
+                <el-option
+                  v-for="item in roleOptions"
+                  :key="item.id"
+                  :label="item.roleName"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-col>
+          </el-form-item>
         </el-form>
       </el-row>
       <div slot="footer">
@@ -119,6 +117,7 @@
       :visible.sync="editDialogVisible"
       width="50%"
       @close="updateDialogClose"
+      custom-class="role-mask"
     >
       <span>
         <el-form :model="editForm" :rules="rules" ref="editFormRef" label-width="80px">
@@ -143,6 +142,18 @@
                 </el-form-item>
               </div>
             </el-col>
+            <el-form-item label="角色" prop="roleId">
+              <el-col :span="12">
+                <el-select v-model="editForm.roleId" placeholder="请选择">
+                  <el-option
+                    v-for="item in roleOptions"
+                    :key="item.id"
+                    :label="item.roleName"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-col>
+            </el-form-item>
           </el-row>
         </el-form>
       </span>
@@ -170,6 +181,7 @@ import { getSysUserList } from "@/utils/api";
 import { addSysUser } from "@/utils/api";
 import { deleteSysUser } from "@/utils/api";
 import { updateSysUserStatus } from "@/utils/api";
+import { getRoles } from "@/utils/api";
 
 export default {
   data() {
@@ -184,7 +196,7 @@ export default {
       userList: [],
       total: 0,
       editDialogVisible: false,
-      addDialog: false,
+      addUserDialog: false,
       user: {
         userName: "",
         tel: ""
@@ -198,8 +210,11 @@ export default {
         realPwd: [
           { required: true, message: "请输入密码", trigger: "blur" },
           { min: 6, max: 6, message: "长度在 6 位数字", trigger: "blur" }
-        ]
-      }
+        ],
+        roleId: [{ required: true, message: "请选择角色", trigger: "blur" }]
+      },
+
+      roleOptions: []
     };
   },
   created() {
@@ -221,6 +236,15 @@ export default {
       this.editForm = Object.assign({}, row);
     },
 
+    roleHandler() {
+      this.addUserDialog = true;
+      // 获取角色
+      getRoles().then(res => {
+        if (res.success) {
+          this.roleOptions = res.data;
+        }
+      });
+    },
     handleSizeChange(val) {
       this.queryInfo.pageSize = val;
       this.queryInfo.pageNum = 1;
@@ -233,7 +257,7 @@ export default {
 
     close() {
       this.$refs["ruleForm"].resetFields();
-      this.addDialog = false;
+      this.addUserDialog = false;
     },
     changeStatus(id, del) {
       updateSysUserStatus({
@@ -251,9 +275,9 @@ export default {
         }
       });
     },
-    addDialogClose() {
+    addUserDialogClose() {
       this.$refs["ruleForm"].resetFields();
-      this.addDialog = false;
+      this.addUserDialog = false;
     },
     updateDialogClose() {
       this.$refs["editFormRef"].resetFields();
@@ -265,7 +289,7 @@ export default {
           addSysUser(this.user).then(res => {
             if (res.success) {
               this.$message.success("编辑成功");
-              this.addDialog = false;
+              this.addUserDialog = false;
               this.getUserListData();
             } else {
               this.$message.error("编辑失败");

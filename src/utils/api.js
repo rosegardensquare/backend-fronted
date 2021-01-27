@@ -83,4 +83,8 @@ export function getSysPermiList(params) {
 export function getMenusByParentId(params) {
   return http.get(`/sys/permission/getMenusByParentId`, params);
 }
+export function getRoles(params) {
+  return http.get(`/sys/role/getRoles`, params);
+}
+
 
