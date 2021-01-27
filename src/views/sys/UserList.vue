@@ -144,7 +144,13 @@
             </el-col>
             <el-form-item label="角色" prop="roleId">
               <el-col :span="12">
-                <el-select v-model="editForm.roleId" placeholder="请选择">
+                <el-select v-model="editForm.roleName" placeholder="请选择">
+                  <el-input
+                    type="hidden"
+                    v-model="editForm.roleId"
+                    :disabled="true"
+                    style="display:none;"
+                  ></el-input>
                   <el-option
                     v-for="item in roleOptions"
                     :key="item.id"
