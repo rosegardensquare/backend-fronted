@@ -10,9 +10,10 @@
       <div class="block">
         <el-tree
           class="treeitems"
-          :data="data"
+          :data="permiTreesData"
           node-key="id"
           default-expand-all
+          :props="defaultProps"
           :expand-on-click-node="false"
         >
           <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -67,7 +68,6 @@
         <el-button type="primary" @click="addRole">确定</el-button>
       </div>
     </el-dialog>
-
     <!-- 修改对话框 -->
     <el-dialog
       title="修改权限"
@@ -101,15 +101,24 @@
       </span>
     </el-dialog>
 
-    <!--新增子菜单对话框-->
-    <el-dialog title="新增子菜单" :visible.sync="addTreeDialogVisible" width="30%">
-      <el-form ref="form" :model="addTreeForm" label-width="80px">
-        <el-form-item label="名称">
-          <el-input v-model="addTreeForm.name"></el-input>
-        </el-form-item>
-      </el-form>
-      <el-button @click="addTreeDialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="submitCategoryByParentId">确 定</el-button>
+    <!--新增子权限对话框-->
+    <el-dialog
+      title="新增子权限"
+      :visible.sync="addTreeDialogVisible"
+      width="30%"
+      custom-class="role-mask"
+    >
+      <span>
+        <el-form ref="form" :model="addTreeForm" label-width="80px">
+          <el-form-item label="权限名称">
+            <el-input v-model="addTreeForm.name"></el-input>
+          </el-form-item>
+        </el-form>
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addTreeDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addPermi">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -138,61 +147,27 @@ import { getSysPermiList } from "@/utils/api";
 import { addSysRole } from "@/utils/api";
 import { deleteSysRole } from "@/utils/api";
 import { updateSysRoleStatus } from "@/utils/api";
+import { getRoles } from "@/utils/api";
+import { getMenuList } from "@/utils/api";
+
 let id = 1000;
 export default {
   name: "Permi",
 
   data() {
-    const data = [
-      {
-        id: 0,
-        label: "根菜单",
-        children: [
-          {
-            id: 2,
-            label: "一级 1",
-            children: [
-              {
-                id: 5,
-                label: "一级 1-1"
-              },
-              {
-                id: 6,
-                label: "一级 1-2"
-              }
-            ]
-          },
-
-          {
-            id: 3,
-            label: "二级 1",
-            children: [
-              {
-                id: 7,
-                label: "二级 1-1"
-              },
-              {
-                id: 8,
-                label: "二级 1-2"
-              }
-            ]
-          }
-        ]
-      }
-    ];
-
     return {
-      data: JSON.parse(JSON.stringify(data)),
-      data: JSON.parse(JSON.stringify(data)),
-      btnLoading: false,
-      queryInfo: {
-        queryName: "",
-        pageSize: 5,
-        pageNum: 1
+      // 转换权限树显示的名字对应接口返回权限的名字
+      defaultProps: {
+        label: "permissionName",
+        id: "id"
       },
-      current: 1,
+      // 权限树数据
+      permiTreesData: [],
+      //选择的权限
+      selectedTreeData: {},
+
+      btnLoading: false,
       permiList: [],
-      total: 0,
       editDialogVisible: false,
       addTreeDialogVisible: false,
       addTreeForm: {
@@ -205,25 +180,55 @@ export default {
       editForm: {}, // 更新表单
       rules: {
         roleName: [{ required: true, message: "请输入权限名", trigger: "blur" }]
-      },
-      defaultProps: {
-        label: "permissionName",
-        id: "id"
       }
     };
   },
   created() {
-    this.getPermiListData();
-    this.getSysPermiList();
+    this.getSysPermiTree();
   },
   methods: {
+    // 加载权限树
+    getSysPermiTree() {
+      getMenuList("1")
+        .then(res => {
+          this.permiTreesData = this.arraytotree(res.data);
+        })
+        .catch(res => {});
+    },
+
+    //数组转化为树
+    arraytotree(arr) {
+      var globalTree = [],
+        top = {};
+      top.id = 0;
+      top.permissionName = "根菜单";
+      top.children = arr;
+      globalTree.push(top);
+      return globalTree;
+    },
+
     append(data) {
-      // const newChild = { id: id++, label: "testtest", children: [] };
+      this.selectedTreeData = data;
+      // const newChild = { id: id++, permissionName: "testtest", children: [] };
       // if (!data.children) {
       //   this.$set(data, "children", []);
       // }
       // data.children.push(newChild);
       this.addTreeDialogVisible = true;
+    },
+
+    addPermi() {
+      const newChild = {
+        id: id++,
+        permissionName: this.addTreeForm.name,
+        children: []
+      };
+      if (!this.selectedTreeData.children) {
+        this.$set(this.selectedTreeData, "children", []);
+      }
+      this.selectedTreeData.children.push(newChild);
+      console.log(this.addTreeForm.name);
+      // TODO 更新数据库
     },
 
     removeTree(node, data) {
@@ -241,7 +246,7 @@ export default {
     },
 
     getSysPermiList() {
-      // 获取角色
+      // 获取角色 => permiTreesData
       getRoles().then(res => {
         if (res.success) {
           this.roleOptions = res.data;
