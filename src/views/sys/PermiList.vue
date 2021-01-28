@@ -7,53 +7,35 @@
     </el-breadcrumb>
 
     <el-card class="box-card">
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <el-input
-            placeholder="请输入权限名"
-            clearable
-            v-model="queryInfo.queryName"
-            class="input-with-select"
-            clear="getUserList"
-          >
-            <el-button slot="append" icon="el-icon-search" @click="getPermiListData"></el-button>
-          </el-input>
-        </el-col>
+      <div class="block">
+        <el-tree
+          class="treeitems"
+          :data="data"
+          node-key="id"
+          default-expand-all
+          :expand-on-click-node="false"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span>{{ node.label }}</span>
+            <span>
+              <el-button type="text" size="mini" @click="() => append(data)">增加</el-button>
+              <el-button
+                v-if="data.id !== 0"
+                type="text"
+                size="mini"
+                @click="() => removeTree(node, data)"
+              >删除</el-button>
 
-        <el-col :span="6">
-          <el-button @click="addDialog = true" type="primary">添加</el-button>
-        </el-col>
-      </el-row>
-
-      <el-table
-        :data="permiList"
-        stripe
-        border
-        style="width: 100%"
-        :header-cell-style="{background:'#eef1f6',color:'#606266'}"
-      >
-        <el-table-column prop="permissionName" label="权限名" align="center"></el-table-column>
-
-        <el-table-column align="center" fixed="right" label="操作" width="180">
-          <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-
-            <el-tooltip effect="dark" content="删除" placement="top">
-              <el-button size="mini" type="danger" @click="remove(scope.row.id)">删除</el-button>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- 分页 -->
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="current"
-        :page-sizes="[2, 5, 300, 400]"
-        :page-size="queryInfo.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-      ></el-pagination>
+              <el-button
+                v-if="data.id !== 0"
+                type="text"
+                size="mini"
+                @click="() => editTree(node, data)"
+              >编辑</el-button>
+            </span>
+          </span>
+        </el-tree>
+      </div>
     </el-card>
 
     <!-- 添加 - 对话框 -->
@@ -118,6 +100,17 @@
         <el-button type="primary" @click="updateRole" :loading="btnLoading">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!--新增子菜单对话框-->
+    <el-dialog title="新增子菜单" :visible.sync="addTreeDialogVisible" width="30%">
+      <el-form ref="form" :model="addTreeForm" label-width="80px">
+        <el-form-item label="名称">
+          <el-input v-model="addTreeForm.name"></el-input>
+        </el-form-item>
+      </el-form>
+      <el-button @click="addTreeDialogVisible = false">取 消</el-button>
+      <el-button type="primary" @click="submitCategoryByParentId">确 定</el-button>
+    </el-dialog>
   </div>
 </template>
 
@@ -129,6 +122,15 @@
 .el-table .success-row {
   background: #f0f9eb;
 }
+
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
 </style>
 
 <script>
@@ -136,12 +138,52 @@ import { getSysPermiList } from "@/utils/api";
 import { addSysRole } from "@/utils/api";
 import { deleteSysRole } from "@/utils/api";
 import { updateSysRoleStatus } from "@/utils/api";
-
+let id = 1000;
 export default {
   name: "Permi",
 
   data() {
+    const data = [
+      {
+        id: 0,
+        label: "根菜单",
+        children: [
+          {
+            id: 2,
+            label: "一级 1",
+            children: [
+              {
+                id: 5,
+                label: "一级 1-1"
+              },
+              {
+                id: 6,
+                label: "一级 1-2"
+              }
+            ]
+          },
+
+          {
+            id: 3,
+            label: "二级 1",
+            children: [
+              {
+                id: 7,
+                label: "二级 1-1"
+              },
+              {
+                id: 8,
+                label: "二级 1-2"
+              }
+            ]
+          }
+        ]
+      }
+    ];
+
     return {
+      data: JSON.parse(JSON.stringify(data)),
+      data: JSON.parse(JSON.stringify(data)),
       btnLoading: false,
       queryInfo: {
         queryName: "",
@@ -152,6 +194,10 @@ export default {
       permiList: [],
       total: 0,
       editDialogVisible: false,
+      addTreeDialogVisible: false,
+      addTreeForm: {
+        name: ""
+      },
       addDialog: false,
       role: {
         roleName: ""
@@ -159,13 +205,49 @@ export default {
       editForm: {}, // 更新表单
       rules: {
         roleName: [{ required: true, message: "请输入权限名", trigger: "blur" }]
+      },
+      defaultProps: {
+        label: "permissionName",
+        id: "id"
       }
     };
   },
   created() {
     this.getPermiListData();
+    this.getSysPermiList();
   },
   methods: {
+    append(data) {
+      // const newChild = { id: id++, label: "testtest", children: [] };
+      // if (!data.children) {
+      //   this.$set(data, "children", []);
+      // }
+      // data.children.push(newChild);
+      this.addTreeDialogVisible = true;
+    },
+
+    removeTree(node, data) {
+      const parent = node.parent;
+      const children = parent.data.children || parent.data;
+      const index = children.findIndex(d => d.id === data.id);
+      children.splice(index, 1);
+    },
+
+    editTree(node, data) {
+      const parent = node.parent;
+      const children = parent.data.children || parent.data;
+      const index = children.findIndex(d => d.id === data.id);
+      children.splice(index, 1);
+    },
+
+    getSysPermiList() {
+      // 获取角色
+      getRoles().then(res => {
+        if (res.success) {
+          this.roleOptions = res.data;
+        }
+      });
+    },
     getPermiListData() {
       getSysPermiList(this.queryInfo).then(res => {
         if (res.success) {

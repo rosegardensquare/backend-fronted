@@ -28,6 +28,9 @@
       <el-table :data="userList" stripe border style="width: 100%">
         <el-table-column prop="userName" label="用户名" align="center" width="70"></el-table-column>
         <el-table-column align="center" prop="realPwd" label="密码"></el-table-column>
+
+        <el-table-column align="center" prop="roleName" label="角色"></el-table-column>
+
         <el-table-column align="center" prop="createTimeStr" label="创建时间" width="200"></el-table-column>
         <el-table-column align="center" prop="updateTimeStr" label="更新时间" width="200"></el-table-column>
         <el-table-column prop="del" label="可用状态" align="center" width="100">
@@ -144,13 +147,7 @@
             </el-col>
             <el-form-item label="角色" prop="roleId">
               <el-col :span="12">
-                <el-select v-model="editForm.roleName" placeholder="请选择">
-                  <el-input
-                    type="hidden"
-                    v-model="editForm.roleId"
-                    :disabled="true"
-                    style="display:none;"
-                  ></el-input>
+                <el-select v-model="editForm.roleId" placeholder="请选择">
                   <el-option
                     v-for="item in roleOptions"
                     :key="item.id"
@@ -239,6 +236,12 @@ export default {
 
     handleEdit(index, row) {
       this.editDialogVisible = true;
+      // 获取角色
+      getRoles().then(res => {
+        if (res.success) {
+          this.roleOptions = res.data;
+        }
+      });
       this.editForm = Object.assign({}, row);
     },
 
@@ -311,6 +314,7 @@ export default {
       this.loading = true;
       this.$refs.editFormRef.validate(valid => {
         if (valid) {
+          this.editForm.update = true;
           addSysUser(this.editForm).then(res => {
             this.loading = false;
             if (res.success) {
