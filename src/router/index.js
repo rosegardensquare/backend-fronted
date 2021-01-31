@@ -11,6 +11,8 @@ import UserList from "../views/sys/UserList";
 import RoleList from "../views/sys/RoleList";
 import PermiList from '@/views/sys/PermiList'
 
+import PictureList from '@/views/fronted/PictureList'
+
 
 Vue.use(Router);
 
@@ -80,6 +82,13 @@ export default new Router({
         {
           path: "/permiList",
           component: PermiList,
+          meta: {
+            requireAuth: true,
+          }
+        },
+        {
+          path: "/pictureList",
+          component: PictureList,
           meta: {
             requireAuth: true,
           }

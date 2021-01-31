@@ -90,4 +90,9 @@ export function addPermi(params) {
   return http.post(`/sys/permission/addPermi`, params);
 }
 
+// upload
+export function uploadPic(params) {
+  return http.post(`/pic/upload`, params);
+}
+
 
