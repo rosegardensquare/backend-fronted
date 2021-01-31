@@ -86,5 +86,8 @@ export function getMenusByParentId(params) {
 export function getRoles(params) {
   return http.get(`/sys/role/getRoles`, params);
 }
+export function addPermi(params) {
+  return http.post(`/sys/permission/addPermi`, params);
+}
 
 

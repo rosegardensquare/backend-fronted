@@ -95,12 +95,6 @@
               <div class="grid-content bg-purple">
                 <el-form-item label="角色名" prop="roleName" required>
                   <el-input v-model="editForm.roleName" :disabled="false"></el-input>
-                  <el-input
-                    type="hidden"
-                    v-model="editForm.id"
-                    :disabled="true"
-                    style="display:none;"
-                  ></el-input>
                 </el-form-item>
 
                 <el-form-item label="权限">
@@ -112,8 +106,6 @@
                     node-key="id"
                     lazy
                     show-checkbox
-                    :default-expanded-keys="defaultCheckedKeys"
-                    default-expand-all
                     @check-change="handleCheckChange"
                   >
                     <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -159,13 +151,16 @@ import { getMenuList } from "@/utils/api";
 export default {
   data() {
     return {
+      permisIds: [],
       data: [],
+      dataTemp: [],
       permisIdTemps: [],
       defaultCheckedKeys: [],
       defaultShowNodes: [], // 这里存放要默认展开的节点 id
       defaultProps: {
         label: "permissionName",
-        id: "id"
+        id: "id",
+        parentId: "parentId"
       },
       btnLoading: false,
       queryInfo: {
@@ -197,25 +192,59 @@ export default {
       if (this.editForm.permisIds == null) {
         this.editForm.permisIds = [];
       }
+
       if (checked) {
-        this.editForm.permisIds.push(data.id);
+        if (
+          this.editForm.permisIds.length === 0 ||
+          this.editForm.permisIds.indexOf(data.id) === -1
+        ) {
+          this.editForm.permisIds.push(data.id);
+        }
+        console.log("包含", this.editForm.permisIds.indexOf(data.parentId));
+
+        if (
+          data.parentId != "" &&
+          this.editForm.permisIds.indexOf(data.parentId) === -1
+        ) {
+          this.editForm.permisIds.push(data.parentId);
+        }
       } else {
-        this.editForm.permisIds.splice(
-          this.editForm.permisIds.indexOf(data.id.toString()),
-          1
-        );
+        if (typeof data.children == "undefined") {
+          this.editForm.permisIds.splice(
+            this.editForm.permisIds.indexOf(data.id.toString()),
+            1
+          );
+
+          console.log("dataTemp:", this.dataTemp);
+          for (var i = 0; i < this.dataTemp.length; i++) {
+            for (var j = 0; j < this.dataTemp[i].children.length; j++) {
+              var childrenTemp = this.dataTemp[i].children;
+              for (var k = 0; k < childrenTemp.length; k++) {
+                if (childrenTemp[k].id === data.id) {
+                  this.dataTemp[i].children.splice(k, 1);
+                }
+              }
+            }
+          }
+        }
       }
-      console.log("Change,data", this.permisIdTemps);
+
+      console.log("触发", this.dataTemp);
+      console.log("触发2", this.data);
     },
-    getlist(permisIds) {
-      getMenuList("1")
+    getlist() {
+      getMenuList({ ignoreRole: true })
         .then(res => {
-          this.data = this.arraytotree(res.data);
+          // this.data = this.arraytotree(res.data);
           this.data = res.data;
+          // 数组的深拷贝
+          this.dataTemp = JSON.parse(JSON.stringify(this.data));
+
           //默认选中
-          this.$refs.tree.setCheckedKeys(permisIds);
-          // 默认展开
-          this.defaultCheckedKeys = permisIds;
+          this.$refs.tree.setCheckedKeys(this.permisIds);
+          //默认展开
+          this.defaultCheckedKeys = this.permisIds;
+          console.log("this.data:", this.data);
         })
         .catch(res => {});
     },
@@ -226,7 +255,6 @@ export default {
       var top = [],
         sub = [],
         tempObj = {};
-
       arr.forEach(function(item) {
         if (item.parentId === null) {
           // 顶级分类
@@ -244,7 +272,6 @@ export default {
         // 把当前分类加入到父级的children中
         parent.children.push(item);
       });
-
       return top;
     },
 
@@ -263,6 +290,7 @@ export default {
                 newObject.permissionName = res.data[i].permissionName;
                 newObject.id = res.data[i].id;
                 newObject.icon = res.data[i].icon;
+                newObject.parentId = res.data[i].parentId;
                 data.push(newObject);
               }
               resolve(data);
@@ -287,11 +315,14 @@ export default {
       });
     },
 
+    // 编辑按钮
     handleEdit(index, row) {
       this.editDialogVisible = true;
       this.editForm = Object.assign({}, row);
+      console.log("编辑按钮:this.editForm", this.editForm);
       // 加载权限树
-      this.getlist(this.editForm.permisIds);
+      this.permisIds = this.editForm.permisIds;
+      this.getlist();
     },
 
     handleSizeChange(val) {
@@ -354,6 +385,18 @@ export default {
       this.loading = true;
       this.$refs.editFormRef.validate(valid => {
         if (valid) {
+          console.log("this.dataTemp:", this.dataTemp);
+          // 循环遍历this.dataTemp
+          for (var i = 0; i < this.dataTemp.length; i++) {
+            if (this.dataTemp[i].children.length === 0) {
+              this.editForm.permisIds.splice(
+                this.editForm.permisIds.indexOf(this.dataTemp[i].id.toString()),
+                1
+              );
+            }
+          }
+          console.log("this.editForm:::", this.editForm);
+          //return;
           addSysRole(this.editForm).then(res => {
             this.loading = false;
             if (res.success) {

@@ -117,7 +117,7 @@
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addTreeDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addPermi">确 定</el-button>
+        <el-button type="primary" @click="addPermiHandler">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -149,6 +149,7 @@ import { deleteSysRole } from "@/utils/api";
 import { updateSysRoleStatus } from "@/utils/api";
 import { getRoles } from "@/utils/api";
 import { getMenuList } from "@/utils/api";
+import { addPermi } from "@/utils/api";
 
 let id = 1000;
 export default {
@@ -189,7 +190,7 @@ export default {
   methods: {
     // 加载权限树
     getSysPermiTree() {
-      getMenuList("1")
+      getMenuList({ ignoreRole: true })
         .then(res => {
           this.permiTreesData = this.arraytotree(res.data);
         })
@@ -217,18 +218,30 @@ export default {
       this.addTreeDialogVisible = true;
     },
 
-    addPermi() {
+    addPermiHandler() {
       const newChild = {
-        id: id++,
+        id: "",
         permissionName: this.addTreeForm.name,
-        children: []
+        children: [],
+        parentId: this.selectedTreeData.id == 0 ? "" : this.selectedTreeData.id
       };
       if (!this.selectedTreeData.children) {
         this.$set(this.selectedTreeData, "children", []);
       }
       this.selectedTreeData.children.push(newChild);
-      console.log(this.addTreeForm.name);
+      console.log(this.selectedTreeData);
       // TODO 更新数据库
+
+      addPermi(newChild).then(res => {
+        if (res.success) {
+          this.$message.success("编辑成功");
+          this.addTreeDialogVisible = false;
+          // 刷新页面
+          this.getSysPermiTree();
+        } else {
+          this.$message.error("编辑失败");
+        }
+      });
     },
 
     removeTree(node, data) {
