@@ -95,4 +95,6 @@ export function uploadPic(params) {
   return http.post(`/pic/upload`, params);
 }
 
-
+export function addPic(params) {
+  return http.post(`/pic/addPic`, params);
+}
