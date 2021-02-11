@@ -21,15 +21,15 @@
   border-bottom: 1px solid #ccc;
 }
 
-.el-dialog,.el-table--border {
+.el-dialog/* ,.el-table--border */ {
   border-radius: 7px;
 }
 
 
-.el-table td, .el-table th.is-leaf,.el-table--border, .el-table--group{
+/* .el-table td, .el-table th.is-leaf,.el-table--border, .el-table--group{
   border-color: rgba(0,102,255,.2);
   
-}
+} */
 
 .el-table th>.cell {
    color: black;
