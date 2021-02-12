@@ -9,24 +9,32 @@
     <el-card class="box-card">
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-button @click="uploadDialog = true" type="primary">上传图片</el-button>
           <el-button @click="addPic()" type="primary">添加</el-button>
         </el-col>
       </el-row>
 
-      <el-table :data="tableData" stripe border style="width: 100%">
-        <el-table-column prop="name" label="模块" width="180"></el-table-column>
+      <el-table :data="picList" stripe border style="width: 100%">
+        <el-table-column prop="type" label="模块" width="180"></el-table-column>
         <el-table-column prop="images" label="图片" width="180">
           <template slot-scope="scope">
             <el-image
-              :src="scope.row.src"
+              :src="scope.row.metavalue"
               :preview-src-list="srcList"
               style="width:100px;height:50px;"
             />
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="创建时间" width="180"></el-table-column>
-        <el-table-column prop="number" label="状态" width="180"></el-table-column>
+        <el-table-column prop="createTimeStr" label="创建时间" width="180"></el-table-column>
+        <el-table-column prop="del" label="状态" width="180">
+          <template slot-scope="scope">
+            <el-switch
+              @change="changeStatus(scope.row.id, !scope.row.del)"
+              v-model="scope.row.del==0"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+            ></el-switch>
+          </template>
+        </el-table-column>
         <el-table-column prop="money" label="删除"></el-table-column>
       </el-table>
 
@@ -121,10 +129,16 @@
 
 <script>
 import { addPic } from "@/utils/api";
+import { getPicList } from "@/utils/api";
 
 export default {
   data() {
     return {
+      queryInfo: {
+        queryName: "",
+        pageSize: 5,
+        pageNum: 1
+      },
       addPicDialog: false,
       uploadDialog: false,
       fileList: [],
@@ -139,30 +153,9 @@ export default {
         picUrl: [{ required: true, message: "请上传图片", trigger: "blur" }]
       },
       // input:'123'
-      tableData: [
-        {
-          src:
-            "https://backend-frontend.oss-cn-beijing.aliyuncs.com/01856e5fdf788411013ee04d5fd0df.jpg%402o.jpg",
-          name: "苹果",
-          number: 1
-        },
-        {
-          src: "./static/images/车厘子.jpg",
-          name: "车厘子",
-          number: 2
-        },
-        {
-          src: "./static/images/火龙果.jpg",
-          name: "火龙果",
-          number: 3
-        },
-        {
-          src: "./static/images/百香果.jpg",
-          name: "百香果",
-          number: 4
-        }
-      ],
+      picList: [],
       srcList: [
+        "http://picture1.yidianchina.com/assets/upload/auctionsite/e52f4b1ad685d0d63fdaa613e0e14b43.jpg",
         "https://backend-frontend.oss-cn-beijing.aliyuncs.com/01856e5fdf788411013ee04d5fd0df.jpg@2o.jpg"
       ],
       picOptions: [
@@ -177,8 +170,19 @@ export default {
       ]
     };
   },
-  created() {},
+  created() {
+    this.getPicListData();
+  },
   methods: {
+    getPicListData() {
+      getPicList(this.queryInfo).then(res => {
+        if (res.success) {
+          this.picList = res.data.records;
+          this.total = res.data.total;
+          this.pageSize = 1;
+        }
+      });
+    },
     closePic() {
       this.$refs["ruleForm"].resetFields();
       this.addPicDialog = false;

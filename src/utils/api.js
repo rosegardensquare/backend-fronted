@@ -98,3 +98,7 @@ export function uploadPic(params) {
 export function addPic(params) {
   return http.post(`/pic/addPic`, params);
 }
+
+export function getPicList(params) {
+  return http.get(`pic/getPicPage`, params);
+}
