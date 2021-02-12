@@ -102,3 +102,7 @@ export function addPic(params) {
 export function getPicList(params) {
   return http.get(`pic/getPicPage`, params);
 }
+
+export function deletePic(params) {
+  return http.get(`pic/deleteById`, params);
+}

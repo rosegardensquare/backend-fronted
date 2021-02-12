@@ -13,9 +13,11 @@
         </el-col>
       </el-row>
 
-      <el-table :data="picList" stripe border style="width: 100%">
-        <el-table-column prop="type" label="模块" width="180"></el-table-column>
-        <el-table-column prop="images" label="图片" width="180">
+      <el-table :data="picList" stripe border>
+        <el-table-column prop="type" label="模块">
+          <template slot-scope="scope">{{scope.row.type==1?'首页轮播':(scope.row.type==2?'首页列表':'其他')}}</template>
+        </el-table-column>
+        <el-table-column prop="images" label="图片">
           <template slot-scope="scope">
             <el-image
               :src="scope.row.metavalue"
@@ -24,8 +26,8 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="createTimeStr" label="创建时间" width="180"></el-table-column>
-        <el-table-column prop="del" label="状态" width="180">
+        <el-table-column prop="createTimeStr" label="创建时间"></el-table-column>
+        <el-table-column prop="del" label="状态">
           <template slot-scope="scope">
             <el-switch
               @change="changeStatus(scope.row.id, !scope.row.del)"
@@ -35,7 +37,15 @@
             ></el-switch>
           </template>
         </el-table-column>
-        <el-table-column prop="money" label="删除"></el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+
+            <el-tooltip effect="dark" content="删除" placement="top">
+              <el-button size="mini" type="danger" @click="remove(scope.row.id)">删除</el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
       </el-table>
 
       <!-- 分页 -->
@@ -130,6 +140,7 @@
 <script>
 import { addPic } from "@/utils/api";
 import { getPicList } from "@/utils/api";
+import { deletePic } from "@/utils/api";
 
 export default {
   data() {
@@ -149,18 +160,17 @@ export default {
       },
       rules: {
         picType: [{ required: true, message: "请选择类型", trigger: "blur" }],
-
         picUrl: [{ required: true, message: "请上传图片", trigger: "blur" }]
       },
-      // input:'123'
       picList: [],
       srcList: [
+        "https://backend-frontend.oss-cn-beijing.aliyuncs.com/2037482.jpg",
         "http://picture1.yidianchina.com/assets/upload/auctionsite/e52f4b1ad685d0d63fdaa613e0e14b43.jpg",
         "https://backend-frontend.oss-cn-beijing.aliyuncs.com/01856e5fdf788411013ee04d5fd0df.jpg@2o.jpg"
       ],
       picOptions: [
         {
-          picType: "轮播",
+          picType: "首页轮播",
           id: "1"
         },
         {
@@ -196,7 +206,7 @@ export default {
             if (res.success) {
               this.$message.success("编辑成功");
               this.addPicDialog = false;
-              this.getUserListData();
+              this.getPicListData();
             } else {
               this.$message.error("编辑失败");
             }
@@ -235,6 +245,32 @@ export default {
     },
     close() {
       this.uploadDialog = false;
+    },
+    remove(id) {
+      this.$confirm("确定要删除吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          deletePic({ id: id }).then(res => {
+            if (res.success) {
+              this.$message({
+                type: "success",
+                message: "删除成功!"
+              });
+              this.getPicListData();
+            } else {
+              this.$message.error("删除失败");
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     }
   }
 };
